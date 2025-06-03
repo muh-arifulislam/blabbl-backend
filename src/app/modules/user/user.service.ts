@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../errors/AppError';
 import { IUser } from './user.interface';
 import { User } from './user.model';
 
@@ -24,4 +26,16 @@ const getUserFriends = async (userId: string) => {
   return user.friends;
 };
 
-export const UserServices = { addUserIntoDB, getUserFriends };
+const getUserByAuth0Id = async (auth0_id: string) => {
+  const user = await User.findOne({
+    auth0_id,
+  }).select('name email auth0_id picture _id');
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  return user;
+};
+
+export const UserServices = { addUserIntoDB, getUserFriends, getUserByAuth0Id };

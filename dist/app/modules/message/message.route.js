@@ -8,6 +8,5 @@ exports.MessageRoutes = void 0;
 const express_1 = __importDefault(require("express"));
 const message_controller_1 = require("./message.controller");
 const router = express_1.default.Router();
-router.post('/', message_controller_1.sendMessage);
-router.get('/', message_controller_1.getMessages);
+router.get('/:from/:to', message_controller_1.MessageController.getMessages);
 exports.MessageRoutes = router;

@@ -8,35 +8,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMessages = exports.sendMessage = void 0;
-const message_model_1 = require("./message.model");
-const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { from, to, content } = req.body;
-        const message = yield message_model_1.Message.create({ from, to, content });
-        return res.status(201).json({ message });
-    }
-    catch (_a) {
-        return res.status(500).json({ error: 'Failed to send message' });
-    }
-});
-exports.sendMessage = sendMessage;
-const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const { user1, user2 } = req.query;
-        if (!user1 || !user2)
-            return res.status(400).json({ error: 'Missing query params' });
-        const messages = yield message_model_1.Message.find({
-            $or: [
-                { from: user1, to: user2 },
-                { from: user2, to: user1 },
-            ],
-        }).sort({ createdAt: 1 });
-        return res.status(200).json({ messages });
-    }
-    catch (_b) {
-        return res.status(500).json({ error: 'Failed to fetch messages' });
-    }
-});
-exports.getMessages = getMessages;
+exports.MessageController = void 0;
+// controllers/chat.controller.ts
+const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
+const http_status_1 = __importDefault(require("http-status"));
+const message_service_1 = require("./message.service");
+const getMessages = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { from, to } = req.params;
+    const result = yield message_service_1.MessageServices.getMessages({ from, to });
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Messages fetched successfully',
+        data: result,
+    });
+}));
+exports.MessageController = {
+    getMessages,
+};

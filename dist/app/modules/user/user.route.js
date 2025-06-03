@@ -9,4 +9,5 @@ const user_controller_1 = require("./user.controller");
 const router = express_1.default.Router();
 router.post('/sync', user_controller_1.UserControllers.syncUser);
 router.get('/:userId/friends', user_controller_1.UserControllers.getUserFriends);
+router.get('/:id/recipient', user_controller_1.UserControllers.getRecipient);
 exports.UserRoutes = router;

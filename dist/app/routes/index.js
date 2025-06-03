@@ -15,7 +15,7 @@ const moduleRoutes = [
         route: auth_route_1.AuthRoutes,
     },
     {
-        path: '/chat',
+        path: '/messages',
         route: message_route_1.MessageRoutes,
     },
 ];

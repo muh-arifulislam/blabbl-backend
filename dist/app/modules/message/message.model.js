@@ -7,5 +7,6 @@ const messageSchema = new mongoose_1.Schema({
     to: { type: String, required: true },
     content: { type: String, required: true },
     read: { type: Boolean, default: false },
+    delivered: { type: Boolean, default: false },
 }, { timestamps: { createdAt: true } });
 exports.Message = (0, mongoose_1.model)('Message', messageSchema);

@@ -35,4 +35,14 @@ const getUserFriends = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
-exports.UserControllers = { syncUser, getUserFriends };
+const getRecipient = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield user_service_1.UserServices.getUserByAuth0Id(id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Recipient fetched successfully',
+        data: result,
+    });
+}));
+exports.UserControllers = { syncUser, getUserFriends, getRecipient };

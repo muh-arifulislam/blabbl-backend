@@ -26,4 +26,17 @@ const getUserFriends = catchAsync(async (req, res) => {
   });
 });
 
-export const UserControllers = { syncUser, getUserFriends };
+const getRecipient = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await UserServices.getUserByAuth0Id(id);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: 'Recipient fetched successfully',
+    data: result,
+  });
+});
+
+export const UserControllers = { syncUser, getUserFriends, getRecipient };

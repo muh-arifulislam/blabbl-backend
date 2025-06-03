@@ -7,6 +7,7 @@ const messageSchema = new Schema<IMessage>(
     to: { type: String, required: true },
     content: { type: String, required: true },
     read: { type: Boolean, default: false },
+    delivered: { type: Boolean, default: false },
   },
   { timestamps: { createdAt: true } },
 );

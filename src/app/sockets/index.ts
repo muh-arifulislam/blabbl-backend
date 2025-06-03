@@ -1,5 +1,6 @@
 // socket.ts
 import { Server as SocketIOServer } from 'socket.io';
+import { Message } from '../modules/message/message.model';
 
 let io: SocketIOServer;
 
@@ -21,13 +22,30 @@ export const initSocket = (server: any) => {
       socket.join(userId);
     });
 
-    socket.on('send-message', ({ from, to, content }) => {
+    socket.on('send-message', async ({ from, to, content }) => {
       io.to(to).emit('receive-message', {
         from,
         to,
         content,
         createdAt: new Date(),
       });
+
+      const savedMsg = await Message.create({
+        from,
+        to,
+        content,
+      });
+
+      io.to(from).emit('message-delivered', {
+        messageId: savedMsg._id,
+      });
+    });
+
+    socket.on('mark-as-read', async ({ messageIds }) => {
+      await Message.updateMany(
+        { _id: { $in: messageIds } },
+        { $set: { read: true } },
+      );
     });
 
     socket.on('typing', ({ from, to }) => {

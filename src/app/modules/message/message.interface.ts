@@ -3,6 +3,7 @@ export interface IMessage extends Document {
   to: string;
   content: string;
   read: boolean;
+  delivered: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
