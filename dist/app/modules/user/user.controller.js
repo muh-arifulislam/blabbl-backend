@@ -26,8 +26,8 @@ const syncUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
     });
 }));
 const getUserFriends = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.params;
-    const result = yield user_service_1.UserServices.getUserFriends(userId);
+    const userAuth0Id = req.auth.sub;
+    const result = yield user_service_1.UserServices.getUserFriends(userAuth0Id);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: 200,
@@ -45,4 +45,91 @@ const getRecipient = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
-exports.UserControllers = { syncUser, getUserFriends, getRecipient };
+const searchUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { searchTerm } = req.query;
+    const userAuth0Id = req.auth.sub;
+    const result = yield user_service_1.UserServices.searchUsers(searchTerm, userAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Users fetched successfully',
+        data: result,
+    });
+}));
+const getUserFriendRequests = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userAuth0Id = req.auth.sub;
+    const result = yield user_service_1.UserServices.getUserFriendRequestsFromDB(userAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User friend requests fetched successfully',
+        data: result,
+    });
+}));
+const sentFriendRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const senderAuth0Id = req.auth.sub;
+    const receiverAuth0Id = req.params.id;
+    const result = yield user_service_1.UserServices.sendFriendRequest(senderAuth0Id, receiverAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Friend request sent successfully',
+        data: result,
+    });
+}));
+const acceptFriendRequestController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiverAuth0Id = req.auth.sub; // Auth0 user ID from decoded token
+    const senderAuth0Id = req.params.id;
+    const result = yield user_service_1.UserServices.acceptFriendRequest(receiverAuth0Id, senderAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Friend request has been accepted successfully',
+        data: result,
+    });
+}));
+const deleteFriendRequestController = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const receiverAuth0Id = req.auth.sub; // Auth0 user ID from decoded token
+    const senderAuth0Id = req.params.id;
+    const result = yield user_service_1.UserServices.deleteFriendRequest(receiverAuth0Id, senderAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Friend request has been canceled.',
+        data: result,
+    });
+}));
+const unFriendUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const userAuth0Id = req.auth.sub;
+    const friendAuth0Id = req.params.id;
+    const result = yield user_service_1.UserServices.unFriendFromDB(userAuth0Id, friendAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'User has been unfriended successfully',
+        data: result,
+    });
+}));
+const cancelFriendRequest = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const senderAuth0Id = req.auth.sub;
+    const receiverAuth0Id = req.params.id;
+    const result = yield user_service_1.UserServices.cancelFriendRequest(senderAuth0Id, receiverAuth0Id);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: 200,
+        message: 'Friend request has been canceled successfully',
+        data: result,
+    });
+}));
+exports.UserControllers = {
+    syncUser,
+    getUserFriends,
+    getRecipient,
+    searchUsers,
+    sentFriendRequest,
+    acceptFriendRequestController,
+    deleteFriendRequestController,
+    getUserFriendRequests,
+    unFriendUser,
+    cancelFriendRequest,
+};

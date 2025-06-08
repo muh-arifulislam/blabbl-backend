@@ -16,31 +16,84 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const jwks_rsa_1 = __importDefault(require("jwks-rsa"));
 const config_1 = __importDefault(require("../config"));
 const user_model_1 = require("../modules/user/user.model");
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// Create a JWKS client
+const client = (0, jwks_rsa_1.default)({
+    jwksUri: `${config_1.default.auth0_domain}.well-known/jwks.json`,
+});
+// Function to get signing key dynamically
+const getKey = (header, callback) => {
+    client.getSigningKey(header.kid, (err, key) => {
+        const signingKey = key === null || key === void 0 ? void 0 : key.getPublicKey();
+        callback(err, signingKey);
+    });
+};
 const validateAuth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const token = req.headers.authorization;
-        // checking if the token is missing
         if (!token) {
             throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
         }
-        // checking if the given token is valid
-        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret);
-        const { email, role } = decoded;
-        // checking if the user is exist
-        const user = yield user_model_1.User.findOne({ email: email });
-        if (!user) {
-            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'This user is not found !');
-        }
-        //checking if user has validated access role
-        if (requiredRoles && !requiredRoles.includes(role)) {
-            throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You are not authorized!');
-        }
-        req.user = decoded;
-        req.userEmail = user.email;
-        next();
+        jsonwebtoken_1.default.verify(token, getKey, {
+            audience: config_1.default.auth0_audience,
+            issuer: config_1.default.auth0_domain,
+            algorithms: ['RS256'],
+        }, (err, decoded) => __awaiter(void 0, void 0, void 0, function* () {
+            if (err) {
+                console.log(err);
+                return next(new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'Invalid token'));
+            }
+            console.log(decoded);
+            const { email, role } = decoded;
+            const user = yield user_model_1.User.findOne({ email });
+            if (!user) {
+                throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
+            }
+            if (requiredRoles.length && !requiredRoles.includes(role)) {
+                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'Unauthorized role');
+            }
+            req.user = decoded;
+            req.userEmail = email;
+            next();
+        }));
     }));
 };
 exports.default = validateAuth;
+// import httpStatus from 'http-status';
+// import AppError from '../errors/AppError';
+// import catchAsync from '../utils/catchAsync';
+// import { NextFunction, Request, Response } from 'express';
+// import jwt, { JwtPayload } from 'jsonwebtoken';
+// import config from '../config';
+// import { User } from '../modules/user/user.model';
+// // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// const validateAuth = (...requiredRoles: any) => {
+//   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//     const token = req.headers.authorization;
+//     // checking if the token is missing
+//     if (!token) {
+//       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+//     }
+//     // checking if the given token is valid
+//     const decoded = jwt.verify(
+//       token,
+//       config.jwt_access_secret as string,
+//     ) as JwtPayload;
+//     const { email, role } = decoded;
+//     // checking if the user is exist
+//     const user = await User.findOne({ email: email });
+//     if (!user) {
+//       throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+//     }
+//     //checking if user has validated access role
+//     if (requiredRoles && !requiredRoles.includes(role)) {
+//       throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!');
+//     }
+//     req.user = decoded as JwtPayload & { role: string };
+//     req.userEmail = user.email;
+//     next();
+//   });
+// };
+// export default validateAuth;

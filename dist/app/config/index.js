@@ -22,4 +22,8 @@ exports.default = {
     cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
     stripe_secret: process.env.STRIPE_SECRET,
     frontend_url: process.env.FRONTEND_URL,
+    auth0_domain: process.env.AUTH0_DOMAIN,
+    auth0_client_id: process.env.AUTH0_CLIENT_ID,
+    auth0_audience: process.env.AUTH0_AUDIENCE,
+    auth0_issuer: process.env.AUTH0_ISSUER,
 };
