@@ -13,7 +13,6 @@ const app: Application = express();
 
 //parsers
 app.use(express.json());
-dotenv.config();
 
 app.use(
   cors({

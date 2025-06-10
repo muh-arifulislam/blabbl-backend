@@ -10,6 +10,10 @@ async function main() {
   try {
     await mongoose.connect(config.database_url as string);
 
+    for (const [key, value] of Object.entries(config)) {
+      console.log(`config.${key} = ${value}`);
+    }
+
     // seedSuperAdmin();
 
     server = app.listen(config.port, () => {
