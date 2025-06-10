@@ -14,10 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
-const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_model_1 = require("../user/user.model");
-const auth_utils_1 = require("./auth.utils");
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     // checking if the user is exist
     const user = yield user_model_1.User.findOne({
@@ -35,14 +33,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     //     throw new AppError(httpStatus.FORBIDDEN, 'Password did not matched...!');
     //   }
     // }
-    //create token and sent to the  client
-    const jwtPayload = {
-        email: user.email,
-        role: 'user',
-        id: user._id,
-    };
-    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
-    return { token: accessToken };
+    return { token: '' };
 });
 exports.AuthServices = {
     loginUser,

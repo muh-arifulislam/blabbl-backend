@@ -12,7 +12,7 @@ const handleValidationError_1 = __importDefault(require("../errors/handleValidat
 const handleZodError_1 = __importDefault(require("../errors/handleZodError"));
 const globalErrorHandler = (err, req, res, next) => {
     //setting default values
-    let statusCode = 500;
+    let statusCode = (err === null || err === void 0 ? void 0 : err.status) || 500;
     let message = 'Something went wrong!';
     let errorSources = [
         {
