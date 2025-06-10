@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express, { Application, Request, Response } from 'express';
 import router from './app/routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
@@ -12,6 +13,7 @@ const app: Application = express();
 
 //parsers
 app.use(express.json());
+dotenv.config();
 
 app.use(
   cors({
